@@ -96,6 +96,16 @@ public:
 
     bool canPlay(position) const;
 
+    std::vector<position> getPositions()
+    {
+        std::vector<position> positions;
+        for(auto & el : values)
+        {
+            positions.push_back(el.first);
+        }
+        return positions;
+    }
+
 };
 
 

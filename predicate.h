@@ -20,11 +20,7 @@ public:
     {
         return func(p ...);
     }
-
-    virtual ~Predicate()
-    {
-
-    }
 };
+
 
 #endif // PREDICATE_H

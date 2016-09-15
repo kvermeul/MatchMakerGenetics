@@ -27,8 +27,6 @@ std::vector<T> & Tournament<T>::doOption(std::vector<T> & comps,std::function<bo
 {
     unsigned int numberToKeep = comps.size()*AlgorithmOption<T>::value/100;
 
-    std::srand(time(NULL));
-
     std::vector<T> copyComps;
 
     for(unsigned int i=0;i<numberToKeep;i++)

@@ -41,14 +41,20 @@ using Solution = std::pair<composition,composition>;
 class CompositionsAlgorithm : public GeneticAlgorithm<Solution>
 {
 public:
-    CompositionsAlgorithm(int,int,std::vector<std::unique_ptr<AlgorithmOption<Solution>>> &);
+    CompositionsAlgorithm(std::vector<std::unique_ptr<AlgorithmOption<Solution>>> &);
+    CompositionsAlgorithm(GeneticStrategy<Solution> &, std::vector<std::unique_ptr<AlgorithmOption<Solution>>> &);
+
 
     std::vector<Solution> getAllComb(std::vector<player> &, std::pair<formation,formation> &);
     std::vector<Solution> generateInitialGeneration(std::vector<player> &,std::pair<formation,formation> &,unsigned int,std::vector<Predicate<const composition &, const composition &>>  &);
     std::vector<Solution> generateInitialGeneration(std::vector<player> &,std::pair<formation,formation> &&,unsigned int,std::vector<Predicate<const composition &, const composition &>>  &);
     std::vector<Solution> & selection(std::vector<Solution> &, std::vector<Predicate<const composition &, const composition &>>  &);
     std::vector<Solution> & crossover(std::vector<Solution> &, std::vector<Predicate<const composition &, const composition &>>  &);
+    std::vector<std::pair<position,player>> correctPositions(formation & f,formation & otherF, std::vector<std::pair<position,player>> & solution);
     std::vector<Solution> & mutate(std::vector<Solution> &,formation & format1,formation & format2, std::vector<Predicate<const composition &, const composition &>>  &);
+    std::vector<Solution> generateClosestElements(Solution & ,unsigned int, std::vector<Predicate<const composition &, const composition &>>  &);
+    Solution mutateType1(Solution &,formation & format1,formation & format2, std::vector<Predicate<const composition &, const composition &>>  &);
+    Solution & mutateType2(Solution & solutions,formation & f1,formation & f2,std::vector<Predicate<const composition &, const composition &>>  & predicates);
 };
 
 

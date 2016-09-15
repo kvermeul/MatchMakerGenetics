@@ -152,39 +152,6 @@ void composition_helper::fillRandomComp(std::vector<player> & players, std::vect
     auto itRemainPos = remainingPositions.begin();
 
     auto copyComp = comp;
-    //    std::vector<int> indexesNonTested;
-    //    for(unsigned int i=0;i<players.size();i++)
-    //    {
-    //        indexesNonTested.push_back(i);
-    //    }
-    //        while(!indexesNonTested.empty() && comps.size() != solutionsNumber )
-    //        {
-    //            unsigned int test = std::rand()%indexesNonTested.size();
-    //            if(!copyComp.hasPlayer(players[test])&&players[test].canPlay(*itPos))
-    //            {
-    //                copyComp.addPlayer(*itPos,players[test]);
-    //                remainingPlayers.erase(remainingPlayers.begin()+test);
-    //                remainingPositions.erase(itRemainPos);
-    //                if(copyComp.getNbPlayers()==copyComp.getFormat().getNbPlayers())
-    //                {
-
-    //                    if(comps.size()<solutionsNumber)
-    //                    {
-    //                        comps.push_back(copyComp);
-    //                    }
-
-    //                    remainingPositions = positions;
-    //                    copyComp = comp;
-    //                }
-    //                else
-    //                {
-    //                    composition_helper::fillRandomComp(remainingPlayers,remainingPositions,copyComp,comps,solutionsNumber,variety);
-    //                    remainingPlayers = players;
-    //                    remainingPositions = positions;
-    //                    copyComp = comp;
-    //                }
-    //            }
-    //        }
     for(;itPlay != players.end() && comps.size()!=solutionsNumber;itPlay++,itRemainPlay++)
     {
         if(!copyComp.hasPlayer(*itPlay) && itPlay->canPlay(*itPos))
@@ -242,7 +209,6 @@ composition composition_helper::getRandomComp(std::vector<player> & players,form
     composition result(format);
 
     //Now pick randomly the players to fill the comp
-    std::srand(time(0));
     for(auto & pair : playersByPosition)
     {
         if(pair.second.empty())
@@ -296,24 +262,24 @@ std::vector<composition> composition_helper::getBestComp(std::vector<player> & p
     return result;
 }
 
+std::vector<std::pair<position,player>> composition_helper::toVector(composition & comp)
+{
+    std::vector<std::pair<position,player>> vectorSolution;
+    auto firstComp = comp.getComp();
+    for(auto & pair: firstComp)
+    {
+        vectorSolution.push_back(pair);
+    }
+    return vectorSolution;
+}
 
 
 std::vector<std::pair<position,player>> composition_helper::toVector(std::pair<composition,composition> & solution)
 {
     //Transform the compositions to vector
-    std::vector<std::pair<position,player>> vectorSolution;
-    auto firstComp = solution.first.getComp();
-    for(auto & pair: firstComp)
-    {
-        vectorSolution.push_back(pair);
-    }
-
-    auto secondComp = solution.second.getComp();
-    for(auto & pair : secondComp)
-    {
-        vectorSolution.push_back(pair);
-    }
-
+    auto vectorSolution = composition_helper::toVector(solution.first);
+    auto vectorSolution2 = composition_helper::toVector(solution.second);
+    vectorSolution.insert(vectorSolution.end(),vectorSolution2.begin(),vectorSolution2.end());
     return vectorSolution;
 }
 

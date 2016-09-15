@@ -6,14 +6,14 @@
 #include <algorithm>
 #include <utility>
 #include "formation.h"
-
+#include<map>
 
 class composition
 {
 private:
     double value;
     formation format;
-    std::unordered_map<position,player> comp;
+    std::map<position,player> comp;
 public:
     composition(formation &);
     composition(const formation &);
@@ -44,7 +44,7 @@ public:
     {
         comp.erase(po);
     }
-    std::unordered_map<position,player> getComp() const
+    std::map<position,player> getComp() const
     {
         return comp;
     }

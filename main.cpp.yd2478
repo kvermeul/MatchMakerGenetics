@@ -15,8 +15,13 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-
+    
+    
+    
+    
     std::cout<<"ALGO STARTED"<<std::endl;
+
+
 
     ////////////////////////////////////PLAYERS////////////////////////////////
 
@@ -176,20 +181,20 @@ int main(int argc, char *argv[])
     f.addSynergy(position::MOC,position::MC);
     f.addSynergy(position::MC,position::MDC);
 
-    //    std::vector<composition> possible = composition_helper::allPossibleComp(v1,f);
+//    std::vector<composition> possible = composition_helper::allPossibleComp(v1,f);
 
 
-    //    for(auto it = possible.begin();it!=possible.end();it++)
-    //    {
-    //        std::cout<<it->calculGlobalValue()<<std::endl;
-    //    }
+//    for(auto it = possible.begin();it!=possible.end();it++)
+//    {
+//        std::cout<<it->calculGlobalValue()<<std::endl;
+//    }
 
-    //    auto bestComp = composition_helper::getBestComp(v1,f);
+//    auto bestComp = composition_helper::getBestComp(v1,f);
 
-    //    for(auto& comp:bestComp)
-    //    {
-    //        std::cout<<comp.getValue()<<std::endl;
-    //    }
+//    for(auto& comp:bestComp)
+//    {
+//        std::cout<<comp.getValue()<<std::endl;
+//    }
 
     formation f2(8);
 
@@ -210,21 +215,20 @@ int main(int argc, char *argv[])
 
     std::vector<std::unique_ptr<AlgorithmOption<std::pair<composition,composition>>>> options;
 
-    BiasedRoulette<std::pair<composition,composition>> br(2);
+    BiasedRoulette<std::pair<composition,composition>> br(1);
     std::unique_ptr<BiasedRoulette<std::pair<composition,composition>>> ptrBiasedRoulette(&br);
 
-    Elitism<std::pair<composition,composition>> el(2);
+    Elitism<std::pair<composition,composition>> el(1);
     std::unique_ptr<Elitism<std::pair<composition,composition>>> ptrElitism(&el);
 
-    Tournament<std::pair<composition,composition>> to(2,0);
+    Tournament<std::pair<composition,composition>> to(0,0);
     std::unique_ptr<Tournament<std::pair<composition,composition>>> ptrTournament(&to);
 
     options.push_back(std::move(ptrBiasedRoulette));
     options.push_back(std::move(ptrElitism));
     options.push_back(std::move(ptrTournament));
 
-
-
+    CompositionsAlgorithm algo(99,60,options);
 
     //////////////////////////////////PREREQUISITE FOR THE TEAMS////////////////////////////////////////////////
 
@@ -243,86 +247,30 @@ int main(int argc, char *argv[])
 
     //predicates.push_back(pred1);
 
-    CompositionsAlgorithm algo(options);
-
-    auto geneticDistrib = [&f,&f2,&v1,&predicates,&algo](std::vector<std::pair<composition,composition>> & currentGeneration){
-        auto best = *std::max_element(currentGeneration.cbegin(),currentGeneration.cend(),composition_helper::comparePairs);
-        currentGeneration.clear();
-        currentGeneration.push_back(best);
-        //auto newInitial = algo.generateInitialGeneration(v1,std::pair<formation,formation>(f,f2),99,predicates);
-        auto newInitial = algo.generateClosestElements(best,99,predicates);
-        currentGeneration.insert(currentGeneration.end(),newInitial.begin(),newInitial.end());
-        return currentGeneration;
-    };
-
-    GeneticStrategy<std::pair<composition,composition>> stra(80,50,10,geneticDistrib);
-
-    algo.setGeneticStrategy(stra);
-
-    /////////////////////////////////////////////ASPECT TO EVALUATE ALGORITHM PERFORMANCE/////////////////////////////////////
-    auto differentValuesLambda = [](std::vector<auto> & selected){
-        int differentValues = 0;
-        std::remove_reference_t<decltype(selected)>v;
-        for(auto & possibility : selected)
-        {
-            if(std::find(v.cbegin(),v.cend(),possibility)==v.cend())
-            {
-                v.push_back(possibility);
-                differentValues++;
-            }
-        }
-        return differentValues;
-    };
-
-    auto timerFunc = [](auto && func, auto && ... params ){
-        std::clock_t begin = clock();
-        std::forward<decltype(func)>(func)(std::forward<decltype(params)> (params)...);
-        std::clock_t end = clock();
-        return double(end-begin)/CLOCKS_PER_SEC;
-    };
-
-    auto wrapperMemberFunc = [& algo](auto && ... params){
-        algo.generateInitialGeneration(std::forward<decltype(params)>(params)...);
-    };
 
     /////////////////////////////////////////////EXECUTION OF THE ALGORITHM///////////////////////////////////////
 
-    //std::cout<<timerFunc(wrapperMemberFunc,v1,std::pair<formation,formation>(f,f2),150,predicates)<<std::endl;
-
+    std::clock_t tStart = std::clock();
 
     auto possibilities = algo.generateInitialGeneration(v1,std::pair<formation,formation>(f,f2),100,predicates);
 
-    auto best = *std::max_element(possibilities.begin(),possibilities.end(),composition_helper::comparePairs);
+    auto best = std::max_element(possibilities.begin(),possibilities.end(),composition_helper::comparePairs);
 
-    auto currentValue = composition_helper::calculValueSolution(best);
-    auto currentStrength = composition_helper::calculStrengthSolution(best);
-
-    std::cout<<" BEST ELEMENT VAL: " << currentValue << std::endl;
-    std::cout<<" BEST ELEMENT  STR: " << currentStrength << std::endl;
+    std::cout<<" BEST ELEMENT VAL: " << composition_helper::calculValueSolution(*best)<< std::endl;
+    std::cout<<" BEST ELEMENT  STR: " << composition_helper::calculStrengthSolution(*best)<< std::endl;
 
     auto & selected = possibilities;
 
-    std::cout<<"DIFFERENT VALUES AT THE BEGINNING : " << differentValuesLambda(selected) << std::endl;
-
-    auto strategy = algo.getGeneticStrategy();
-
     for(int i=0;;i++)
     {
-        static int sameBestGeneration = 0;
-
         double totalDeviation = 0;
         double strength=0;
-
-        best = *std::max_element(selected.begin(),selected.end(),composition_helper::comparePairs);
-        auto bestValue = composition_helper::calculValueSolution(best);
-        auto bestStrength = composition_helper::calculStrengthSolution(best);
-        std::cout<<" BEST ELEMENT VAL: "<< i<< " " << bestValue << std::endl;
-        std::cout<<" BEST ELEMENT  STR: " << i << " " << bestStrength << std::endl;
-
+        best = std::max_element(selected.begin(),selected.end(),composition_helper::comparePairs);
+        std::cout<<" BEST ELEMENT VAL: "<< i<< " " << composition_helper::calculValueSolution(*best)<< std::endl;
+        std::cout<<" BEST ELEMENT  STR: " << i << " " << composition_helper::calculStrengthSolution(*best)<< std::endl;
         if(i!=0)
         {
             selected = algo.selection(selected,predicates);
-            std::cout<<"DIFFERENT VALUES  : " << differentValuesLambda(selected) << std::endl;
         }
 
         selected = algo.crossover(selected,predicates);
@@ -332,29 +280,13 @@ int main(int argc, char *argv[])
             totalDeviation += std::abs(possibility.first.getValue()-possibility.second.getValue());
             strength+=possibility.first.getValue()+possibility.second.getValue();
         }
-
-
-        if(sameBestGeneration==strategy.getNumberGenerationBeforeRedistribution())
-        {
-            std::cout<<"REDISTRIBUTING..."<<std::endl;
-            strategy.redistribute(selected);
-            sameBestGeneration = 0;
-        }
-        else if(currentValue == bestValue && currentStrength == bestStrength)
-        {
-            ++sameBestGeneration;
-        }
-        else
-        {
-            sameBestGeneration = 0;
-        }
-        currentValue = bestValue;
-        currentStrength = bestStrength;
-
         std::cout << "TOTAL DEV : "<< totalDeviation <<std::endl;
         std::cout << "TOTAL STR : "<< strength <<std::endl;
         std::cout << "Number: "<< selected.size() <<std::endl;
-
+        if(strength==132)
+        {
+            std::cout<<"TIME TAKEN : " << static_cast<double>(std::clock() - tStart)/CLOCKS_PER_SEC;
+        }
     }
 
 

@@ -1,0 +1,11 @@
+#ifndef LAMBDAPREDICATE_H
+#define LAMBDAPREDICATE_H
+
+
+class LambdaPredicate
+{
+public:
+    LambdaPredicate();
+};
+
+#endif // LAMBDAPREDICATE_H

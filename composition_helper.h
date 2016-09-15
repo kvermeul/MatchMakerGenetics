@@ -18,6 +18,8 @@ public:
     static composition getRandomComp(std::vector<player> & players,formation & format);
     static bool checkAllPredicates(const std::pair<composition,composition> &,PredicatesVector  &);
     static std::vector<std::pair<position,player>> toVector(std::pair<composition,composition> &);
+    static std::vector<std::pair<position,player>> toVector(composition &);
+
     static std::pair<composition,composition> toCompositionPair (std::vector<std::pair<position,player>> &, formation & f1,formation & f2);
     static double calculValueSolution(const std::pair<composition,composition> & solution)
     {
@@ -39,8 +41,10 @@ public:
         }
     }
 
+
     composition_helper() = delete;
 
 };
+
 
 #endif // COMPOSITION_HELPER_H

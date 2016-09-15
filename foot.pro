@@ -27,7 +27,9 @@ SOURCES += main.cpp\
     biasedroulette.cpp \
     tournament.cpp \
     geneticalgorithm.cpp \
-    geneticFootAlgorithm.cpp
+    geneticFootAlgorithm.cpp \
+    genericpredicate.cpp \
+    geneticstrategy.cpp
 
 HEADERS  += mainwindow.h \
     player.h \
@@ -42,6 +44,8 @@ HEADERS  += mainwindow.h \
     hashingextension.h \
     tournament.h \
     geneticalgorithm.h \
-    geneticFootAlgorithm.h
+    geneticFootAlgorithm.h \
+    genericpredicate.h \
+    geneticstrategy.h
 
 FORMS    += mainwindow.ui
