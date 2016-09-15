@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
     algo.setGeneticStrategy(stra);
 
     /////////////////////////////////////////////ASPECT TO EVALUATE ALGORITHM PERFORMANCE/////////////////////////////////////
-    auto differentValuesLambda = [](std::vector<auto> & selected){
+    auto differentValuesLambda = [](auto & selected){
         int differentValues = 0;
         std::remove_reference_t<decltype(selected)>v;
         for(auto & possibility : selected)
